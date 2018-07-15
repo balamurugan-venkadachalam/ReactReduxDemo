@@ -30,7 +30,7 @@ const store = createStore(rootReducer);
 console.log(store.getState());
 
 //Subscription 
-
+    
 store.subscribe(()=> {
     console.log('[Subscribe = ]', store.getState());
 });

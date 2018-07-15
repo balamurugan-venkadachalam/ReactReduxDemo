@@ -3,11 +3,35 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-import {createStore} from 'redux';
-import reducer from './store/Reducer';
-import {Provider} from 'react-redux'
+import {createStore, combineReducers, applyMiddleware, compose} from 'redux';
+//import reducer from './store/Reducer';
+import counterReducer from './store/reducers/counter';
+import resultReducer from './store/reducers/result';
+import {Provider} from 'react-redux';
+import thunk from 'redux-thunk';
 
-const store = createStore(reducer);
+const logger = store => {    
+    return next => {
+        return action => {
+            console.log('[ Middleware ] Dispatching ', action);
+            const result = next(action);
+            console.log('[ Middleware ] next state ', store.getState());
+            return result;
+        }
+    }
+};
+
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const rootReducers = combineReducers({
+    ctr: counterReducer,
+    res: resultReducer
+});
+
+const store = createStore(rootReducers, composeEnhancer(applyMiddleware(logger, thunk)));
+
+
+
 
 ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
 registerServiceWorker();
